@@ -1,0 +1,547 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package oso_app;
+import java.sql.*;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+/**
+ *
+ * @author DELL
+ */
+public class form_pegawai extends javax.swing.JFrame {
+koneksi kon=new koneksi();
+private Object [][] datapegawai=null;
+private String[]label={"Id Pegawai","Username","Password","Departemen","Manajer"};
+    /**
+     * Creates new form form_pegawai
+     */
+    public form_pegawai() {
+        initComponents();
+        kon.setKoneksi();
+BacaTabelPegawai();
+    }
+
+private String idPegawai()
+{
+String no=null;
+try{
+String sql = "Select right(id_pegawai,3)+1 from pegawai ";
+ResultSet rs = kon.st.executeQuery(sql);
+if (rs.next()){
+rs.last();
+no = rs.getString(1);
+while (no.length()<3){
+no="00"+no;
+no="P"+no;
+tid_pegawai.setText(no);
+}
+}else{
+no="P001";
+tid_pegawai.setText(no);
+}
+}catch (Exception e){
+}return no;
+}
+
+private void BacaTabelPegawai(){
+try{
+String sql="Select *From pegawai order by id_pegawai";
+kon.rs=kon.st.executeQuery(sql);
+ResultSetMetaData m=kon.rs.getMetaData();
+int kolom=m.getColumnCount();
+int baris=0;
+while(kon.rs.next()){
+baris=kon.rs.getRow();
+}
+datapegawai=new Object[baris][kolom];
+int x=0;
+kon.rs.beforeFirst();
+while(kon.rs.next()){
+datapegawai[x][0]=kon.rs.getString("id_pegawai");
+datapegawai[x][1]=kon.rs.getString("username");
+datapegawai[x][2]=kon.rs.getString("password");
+datapegawai[x][3]=kon.rs.getString("departemen");
+datapegawai[x][4]=kon.rs.getString("manajer");
+x++;
+}
+tbl_pegawai.setModel(new DefaultTableModel(datapegawai,label));
+}
+catch(SQLException e){
+JOptionPane.showMessageDialog(null, e);
+}
+}
+
+private void BacaTabelPegawai2(){
+try{
+String sql="select *from pegawai where username like '%" +tcari.getText()+ "%' ";
+kon.rs=kon.st.executeQuery(sql);
+ResultSetMetaData m=kon.rs.getMetaData();
+int kolom=m.getColumnCount();
+int baris=0;
+while(kon.rs.next()){
+baris=kon.rs.getRow();
+}
+datapegawai=new Object[baris][kolom];
+int x=0;
+kon.rs.beforeFirst();
+while(kon.rs.next()){
+datapegawai[x][0]=kon.rs.getString("id_pegawai");
+datapegawai[x][1]=kon.rs.getString("username");
+datapegawai[x][2]=kon.rs.getString("password");
+datapegawai[x][3]=kon.rs.getString("departemen");
+datapegawai[x][4]=kon.rs.getString("manajer");
+x++;
+}
+tbl_pegawai.setModel(new DefaultTableModel(datapegawai,label));
+}
+catch(SQLException e){
+JOptionPane.showMessageDialog(null, e);
+}
+}
+
+private void setTable(){
+int row=tbl_pegawai.getSelectedRow();
+tid_pegawai.setText((String)tbl_pegawai.getValueAt(row,0));
+tusername.setText((String)tbl_pegawai.getValueAt(row,1));
+tpassword.setText((String)tbl_pegawai.getValueAt(row,2));
+tdepartemen.setText((String)tbl_pegawai.getValueAt(row,3));
+tmanajer.setText((String)tbl_pegawai.getValueAt(row,4));
+}
+
+private void BersihField(){
+tid_pegawai.setText("");
+tusername.setText("");
+tdepartemen.setText("");
+tpassword.setText("");
+tmanajer.setText("");
+tcari.setText("");
+}
+
+private void aktif(){
+tid_pegawai.setEnabled(true);
+tusername.setEnabled(true);
+tdepartemen.setEnabled(true);
+tpassword.setEnabled(true);
+tmanajer.setEnabled(true);
+}
+
+private void nonaktif(){
+tid_pegawai.setEnabled(false);
+tusername.setEnabled(false);
+tdepartemen.setEnabled(false);
+tmanajer.setEnabled(false);
+tpassword.setEnabled(false);
+bt_edit.setEnabled(false);
+bt_update.setEnabled(false);
+bt_hapus.setEnabled(false);
+bt_simpan.setEnabled(false);
+}
+
+private void SimpanData(){
+try{
+String sql="insert into pegawai values('"+tid_pegawai.getText()+"','"+tusername.getText()+"','"+tpassword.getText()+"','"+tdepartemen.getText()+"','"+tmanajer.getText()+"')";
+kon.st.executeUpdate(sql);
+JOptionPane.showMessageDialog(null,"Data berhasil disimpan");
+BersihField();
+BacaTabelPegawai();
+}
+catch(SQLException e){
+JOptionPane.showMessageDialog(null,e);
+}
+}
+
+private void EditData(){
+try{
+String sql="Update pegawai set id_pegawai='"+tid_pegawai.getText()+"',username='"+tusername.getText()+
+"',password='"+tpassword.getText()+"',departemen='"+tdepartemen.getText()+
+"',manajer='"+tmanajer.getText()+"' where id_pegawai='"+tid_pegawai.getText()+"'";
+kon.st.executeUpdate(sql);
+JOptionPane.showMessageDialog(null,"Data berhasil diupdate");
+BersihField();
+BacaTabelPegawai();
+}
+catch(SQLException e){
+JOptionPane.showMessageDialog(null,e);
+}
+}
+
+private void HapusData(){
+try{
+String sql="Delete from pegawai where id_pegawai='"+tid_pegawai.getText()+"'";
+kon.st.executeUpdate(sql);
+JOptionPane.showMessageDialog(null,"Data berhasil dihapus");
+BersihField();
+BacaTabelPegawai();
+}
+catch(SQLException e){
+JOptionPane.showMessageDialog(null, e);
+}
+}
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        tid_pegawai = new javax.swing.JTextField();
+        tusername = new javax.swing.JTextField();
+        tpassword = new javax.swing.JTextField();
+        tdepartemen = new javax.swing.JTextField();
+        tmanajer = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tbl_pegawai = new javax.swing.JTable();
+        bt_tambah = new javax.swing.JButton();
+        bt_update = new javax.swing.JButton();
+        bt_hapus = new javax.swing.JButton();
+        bt_simpan = new javax.swing.JButton();
+        bt_batal = new javax.swing.JButton();
+        bt_edit = new javax.swing.JButton();
+        bt_keluar = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        tcari = new javax.swing.JTextField();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowActivated(java.awt.event.WindowEvent evt) {
+                formWindowActivated(evt);
+            }
+        });
+
+        jLabel1.setText("Id Pegawai");
+
+        jLabel2.setText("Username");
+
+        jLabel3.setText("Password");
+
+        jLabel4.setText("Departemen");
+
+        jLabel5.setText("Manajer");
+
+        tbl_pegawai.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tbl_pegawai.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tbl_pegawaiMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tbl_pegawai);
+
+        bt_tambah.setText("Tambah");
+        bt_tambah.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_tambahActionPerformed(evt);
+            }
+        });
+
+        bt_update.setText("Update");
+        bt_update.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_updateActionPerformed(evt);
+            }
+        });
+
+        bt_hapus.setText("Hapus");
+        bt_hapus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_hapusActionPerformed(evt);
+            }
+        });
+
+        bt_simpan.setText("Simpan");
+        bt_simpan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_simpanActionPerformed(evt);
+            }
+        });
+
+        bt_batal.setText("Batal");
+        bt_batal.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_batalActionPerformed(evt);
+            }
+        });
+
+        bt_edit.setText("Edit");
+        bt_edit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_editActionPerformed(evt);
+            }
+        });
+
+        bt_keluar.setText("Tutup");
+        bt_keluar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_keluarActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setText("Cari Id Pegawai");
+
+        tcari.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tcariActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(96, 96, 96)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addGap(39, 39, 39)
+                                .addComponent(tid_pegawai, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(206, 206, 206))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel5)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(tmanajer, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel3)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(tpassword, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addComponent(jLabel2)
+                                        .addGap(44, 44, 44)
+                                        .addComponent(tusername, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel4)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(tdepartemen, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(143, 143, 143))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(77, 77, 77)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(bt_update, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(bt_tambah))
+                            .addGap(18, 18, 18)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(bt_batal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(bt_simpan))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(bt_hapus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(bt_edit, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGap(18, 18, 18)
+                            .addComponent(bt_keluar)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(15, 15, 15)
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(tcari, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 264, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(40, 40, 40))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(tid_pegawai, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(tusername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(tpassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tdepartemen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tmanajer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(bt_tambah)
+                            .addComponent(bt_simpan)
+                            .addComponent(bt_edit))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(bt_update)
+                            .addComponent(bt_batal)
+                            .addComponent(bt_hapus)))
+                    .addComponent(bt_keluar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(tcari, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
+BersihField();
+nonaktif();        // TODO add your handling code here:
+    }//GEN-LAST:event_formWindowActivated
+
+    private void bt_keluarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_keluarActionPerformed
+dispose();        // TODO add your handling code here:
+    }//GEN-LAST:event_bt_keluarActionPerformed
+
+    private void bt_tambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_tambahActionPerformed
+BersihField();
+idPegawai();
+aktif();
+tid_pegawai.setEnabled(false);
+tusername.requestFocus();
+bt_batal.setEnabled(true);
+bt_tambah.setEnabled(false);
+bt_simpan.setEnabled(true);        // TODO add your handling code here:
+    }//GEN-LAST:event_bt_tambahActionPerformed
+
+    private void bt_batalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_batalActionPerformed
+nonaktif();
+BersihField();
+bt_tambah.setEnabled(true);        // TODO add your handling code here:
+    }//GEN-LAST:event_bt_batalActionPerformed
+
+    private void bt_simpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_simpanActionPerformed
+if (tid_pegawai.getText().isEmpty() || tpassword.getText().isEmpty() || tusername.getText().isEmpty() || tdepartemen.getText().isEmpty()) {
+JOptionPane.showMessageDialog(this, "Lengkapi Data", "Konfirmasi", JOptionPane.INFORMATION_MESSAGE);
+bt_tambah.setEnabled(true);
+} else {
+bt_tambah.setEnabled(true);
+bt_keluar.setEnabled(true);
+SimpanData();
+}        // TODO add your handling code here:
+    }//GEN-LAST:event_bt_simpanActionPerformed
+
+    private void tcariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tcariActionPerformed
+BacaTabelPegawai2();        // TODO add your handling code here:
+    }//GEN-LAST:event_tcariActionPerformed
+
+    private void tbl_pegawaiMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbl_pegawaiMouseClicked
+setTable();
+bt_hapus.setEnabled(true);
+bt_edit.setEnabled(true);
+bt_tambah.setEnabled(false);        // TODO add your handling code here:
+    }//GEN-LAST:event_tbl_pegawaiMouseClicked
+
+    private void bt_hapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_hapusActionPerformed
+if (JOptionPane.showConfirmDialog(this, "yakin mau dihapus?", "konfirmasi", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+HapusData();
+bt_tambah.setEnabled(true);
+} else {
+JOptionPane.showMessageDialog(this, "Data Batal Dihapus", "Konfirmasi", JOptionPane.INFORMATION_MESSAGE);
+bt_tambah.setEnabled(true);
+return;
+}
+formWindowActivated(null);        // TODO add your handling code here:
+    }//GEN-LAST:event_bt_hapusActionPerformed
+
+    private void bt_editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_editActionPerformed
+aktif();
+tid_pegawai.setEnabled(false);
+bt_edit.setEnabled(false);
+bt_update.setEnabled(true);
+bt_batal.setEnabled(true);
+bt_hapus.setEnabled(false);
+bt_tambah.setEnabled(false);        // TODO add your handling code here:
+    }//GEN-LAST:event_bt_editActionPerformed
+
+    private void bt_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_updateActionPerformed
+bt_update.setEnabled(false);
+bt_tambah.setEnabled(true);
+EditData();        // TODO add your handling code here:
+    }//GEN-LAST:event_bt_updateActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(form_pegawai.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(form_pegawai.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(form_pegawai.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(form_pegawai.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new form_pegawai().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton bt_batal;
+    private javax.swing.JButton bt_edit;
+    private javax.swing.JButton bt_hapus;
+    private javax.swing.JButton bt_keluar;
+    private javax.swing.JButton bt_simpan;
+    private javax.swing.JButton bt_tambah;
+    private javax.swing.JButton bt_update;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable tbl_pegawai;
+    private javax.swing.JTextField tcari;
+    private javax.swing.JTextField tdepartemen;
+    private javax.swing.JTextField tid_pegawai;
+    private javax.swing.JTextField tmanajer;
+    private javax.swing.JTextField tpassword;
+    private javax.swing.JTextField tusername;
+    // End of variables declaration//GEN-END:variables
+}
